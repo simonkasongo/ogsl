@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h1 class="h4 mb-4">Jeux de données</h1>
+
+  <form class="row g-2 align-items-center mb-3" method="get">
+    <div class="col-lg-5">
+      <input type="text" class="form-control" name="q" value="{{ q }}" placeholder="Rechercher titre/slug/notes…">
+    </div>
+    <div class="col-lg-3">
+      <input type="text" class="form-control" name="theme" value="{{ theme }}" placeholder="Thème contient…">
+    </div>
+    <div class="col-lg-2">
+      <div class="dropdown w-100">
+        <select class="form-select" name="format">
+          <option value="">— Tous formats —</option>
+          {% for f in formats %}
+            <option value="{{ f }}" {% if format == f %}selected{% endif %}>{{ f }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-lg-2 d-grid">
+      <button class="btn btn-primary">Filtrer</button>
+    </div>
+  </form>
+
+  {% if page_obj.object_list %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr class="text-muted small">
+          <th style="width:42%">Titre</th>
+          <th>Organisation</th>
+          <th>Source</th>
+          <th>Thème</th>
+          <th>Modifié</th>
+          <th class="text-end" style="width:60px">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ds in page_obj.object_list %}
+        <tr>
+          <td>
+            <a class="link-primary text-decoration-none" href="#">{{ ds.title|default:ds.name }}</a>
+          </td>
+          <td>
+            {% if ds.organization %}
+              {{ ds.organization.title|default:ds.organization.name }}
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>{{ ds.source.title }}</td>
+          <td>{{ ds.theme|default:"—" }}</td>
+          <td>
+            {% if ds.metadata_modified %}{{ ds.metadata_modified|date:"Y-m-d H:i" }}
+            {% elif ds.metadata_created %}{{ ds.metadata_created|date:"Y-m-d H:i" }}
+            {% else %}<span class="text-muted">—</span>{% endif %}
+          </td>
+          <td class="text-end">
+            <form method="post" action="{% url 'dataset_delete' ds.pk %}" onsubmit="return confirm('Supprimer ce jeu et ses ressources ?');" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit" class="btn btn-link p-0" title="Supprimer" aria-label="Supprimer">
+                <!-- petite poubelle rouge (inline SVG, pas de dépendance externe) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#dc3545" viewBox="0 0 16 16">
+                  <path d="M5.5 5.5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0z"/>
+                  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2H5V1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1h2.5a1 1 0 0 1 1 1M6 1v1h4V1zM4 4v9a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4z"/>
+                </svg>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="pagination">
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&theme={{ theme }}&format={{ format }}">Préc.</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Préc.</span></li>
+      {% endif %}
+      <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}&theme={{ theme }}&format={{ format }}">Suiv.</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Suiv.</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% else %}
+    <div class="alert alert-light border">Aucun jeu trouvé.</div>
+  {% endif %}
+
+  <div class="small text-muted d-flex align-items-center gap-2 mt-4">
+    <span class="opacity-75">© OGSL — Tableau de bord pédagogique</span>
+    <span class="ms-auto"><span class="me-1">☁️</span> Source: OpenGouv (CKAN)</span>
+  </div>
+</div>
+{% endblock %}

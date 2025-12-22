@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Sources{% endblock %}
+{% block content %}
+<div class="row row-cols-1 row-cols-md-2 g-3">
+  {% for s in sources %}
+  <div class="col">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">{{ s.title }}</h5>
+        <p class="card-text text-muted mb-1"><strong>Slug:</strong> {{ s.slug }}</p>
+        <p class="mb-0">
+          <span class="badge bg-primary me-2">{{ s.n_datasets }} jeux</span>
+          <span class="badge bg-secondary">{{ s.n_resources }} ressources</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-muted">Aucune source configurée.</p>
+  {% endfor %}
+</div>
+{% endblock %}

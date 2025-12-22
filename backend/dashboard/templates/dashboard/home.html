@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Statistiques OGSL{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="page-title h3 mb-0">
+      <i class="bi bi-speedometer2 me-2"></i> Statistiques
+    </h1>
+    <span class="subtle"><i class="bi bi-clock-history me-1"></i> Mise à jour à l’affichage</span>
+  </div>
+
+  <div class="row g-3 mb-1">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body kpi">
+          <div class="icon-wrap"><i class="bi bi-database-fill"></i></div>
+          <div>
+            <div class="value">{{ total_datasets|default:0 }}</div>
+            <div class="label">Jeux de données</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body kpi">
+          <div class="icon-wrap"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
+          <div>
+            <div class="value">{{ total_resources|default:0 }}</div>
+            <div class="label">Ressources</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="bi bi-activity me-1"></i> Nouveaux jeux par mois (12 derniers mois)
+          </h5>
+          <div class="chart-box"><canvas id="byMonth"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="bi bi-diagram-3 me-1"></i> Ressources par jeu — distribution
+          </h5>
+          <div class="chart-box"><canvas id="resDist"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="bi bi-globe2 me-1"></i> Top hôtes des ressources
+          </h5>
+          <div class="chart-box chart-tall"><canvas id="topHosts"></canvas></div>
+          <div class="subtle small mt-2">
+            Extrait depuis <code>Resource.url</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="bi bi-pie-chart-fill me-1"></i> Catégories de formats
+          </h5>
+          <div class="chart-box"><canvas id="formatGroups"></canvas></div>
+          <div class="subtle small mt-2">
+            Tabulaire / Géospatial (fichiers) / Services & API / Document / Autre.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const byMonth       = {{ by_month|safe }};
+const resDist       = {{ res_dist|safe }};
+const topHosts      = {{ top_hosts|safe }};
+const formatGroups  = {{ format_groups|safe }};
+
+const labels = (arr) => arr.map(o => (o.label ?? "").toString());
+const values = (arr) => arr.map(o => Number(o.count ?? 0));
+const fmtInt = (n) => new Intl.NumberFormat('fr-CA').format(n);
+const palette = (n) => {
+  const base = ["#4e79a7","#f28e2c","#e15759","#76b7b2","#59a14f",
+                "#edc949","#af7aa1","#ff9da7","#9c755f","#bab0ab",
+                "#2f4b7c","#a05195","#d45087","#f95d6a","#ffa600"];
+  return Array.from({length:n}, (_,i)=>base[i%base.length]);
+};
+const baseOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  resizeDelay: 150,
+  plugins: {
+    legend: { position: "top" },
+    tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label ? ctx.dataset.label + ": " : ""}${fmtInt(ctx.raw ?? 0)}` } }
+  },
+  animation: { duration: 400 }
+};
+
+
+new Chart(document.getElementById("byMonth").getContext("2d"), {
+  type: "line",
+  data: {
+    labels: labels(byMonth),
+    datasets: [{
+      label: "Jeux/mois",
+      data: values(byMonth),
+      fill: false,
+      tension: 0.25,
+      borderColor: palette(1)[0],
+      pointRadius: 3
+    }]
+  },
+  options: { ...baseOpts, scales: { y: { beginAtZero: true, ticks: { callback: (v)=>fmtInt(v) } } } }
+});
+
+
+new Chart(document.getElementById("resDist").getContext("2d"), {
+  type: "bar",
+  data: {
+    labels: labels(resDist),
+    datasets: [{ label: "Jeux", data: values(resDist), backgroundColor: palette(resDist.length), borderRadius: 6 }]
+  },
+  options: { ...baseOpts, scales: { y: { beginAtZero: true, ticks: { callback: (v)=>fmtInt(v) } } } }
+});
+
+
+new Chart(document.getElementById("topHosts").getContext("2d"), {
+  type: "bar",
+  data: {
+    labels: labels(topHosts),
+    datasets: [{ label: "Ressources", data: values(topHosts), backgroundColor: palette(topHosts.length), borderRadius: 6 }]
+  },
+  options: {
+    ...baseOpts,
+    indexAxis: "y",
+    scales: {
+      x: { beginAtZero: true, ticks: { callback: (v)=>fmtInt(v) } },
+      y: { ticks: { autoSkip: false, callback: (v,i,t)=> (t[i]?.label ?? "").slice(0,42) + ((t[i]?.label?.length>42)?"…":"") } }
+    }
+  }
+});
+
+
+new Chart(document.getElementById("formatGroups").getContext("2d"), {
+  type: "doughnut",
+  data: { labels: labels(formatGroups), datasets: [{ data: values(formatGroups), backgroundColor: palette(formatGroups.length) }] },
+  options: { ...baseOpts, cutout: "55%" }
+});
+</script>
+{% endblock %}

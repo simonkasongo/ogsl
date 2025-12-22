@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Moissonnage{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">
+      <i class="bi bi-cloud-arrow-down me-2"></i>
+      Moissonnage OpenGouv — Saint-Laurent
+    </h2>
+
+    <p class="mb-3">
+      Coller un identifiant de jeux de données provenant <strong>d’OpenGouv</strong>.
+      Les formats suivants sont acceptés :
+    </p>
+
+    <ul class="mb-3">
+      <li>
+        <strong>URL API JSON (recommandé)</strong> : 
+        <code>https://open.canada.ca/data/api/action/package_show?id=<em>UUID</em></code>
+      </li>
+      <li>
+        <strong>URL de la page dataset</strong> (fr/en) : 
+        <code>https://open.canada.ca/data/fr/dataset/<em>UUID</em></code>
+      </li>
+      <li>
+        <strong>UUID seul</strong> : 
+        <code>e606ad01-843f-4730-93fa-f944dfbbbf07</code>
+      </li>
+    </ul>
+
+    <form method="post" class="row g-2 align-items-center">
+      {% csrf_token %}
+      <div class="col-12 col-md">
+        <input
+          type="text"
+          name="uuids"
+          class="form-control"
+          placeholder="Ex. https://open.canada.ca/data/api/action/package_show?id=e606ad01-843f-4730-93fa-f944dfbbbf07  (tu peux coller plusieurs valeurs séparées par des espaces ou des retours à la ligne)"
+        />
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary">
+          <i class="bi bi-cloud-arrow-down me-1"></i> Moissonner maintenant
+        </button>
+      </div>
+    </form>
+
+    <hr class="my-4"/>
+
+    <div class="small subtle">
+      <i class="bi bi-info-circle me-1"></i>
+      Notice : Le lien des métadonnées d'OpenGouv : <b>https://open.canada.ca/data/en/dataset/7f4b9eb6-805f-4d0b-a597-2d7a44e045d7</b>
+    </div>
+  </div>
+</div>
+{% endblock %}
