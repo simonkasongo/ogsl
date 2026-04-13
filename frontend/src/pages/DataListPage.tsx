@@ -22,14 +22,18 @@ export const DataListPage: React.FC = () => {
 
   // Mémoriser la fonction loadDatasets
   const loadDatasets = useCallback(() => {
-    // Utiliser GraphQL pour charger les datasets
-    const variables = {
-      search: filters.search,
-      theme: filters.theme,
-      first: 50,
-    };
-    dispatch(fetchDatasetsGraphQL(variables));
-  }, [dispatch, filters.search, filters.theme]);
+    const bits = [filters.search, filters.catalogue, filters.producer].filter(Boolean);
+    const mergedSearch = bits.length ? bits.join(' ') : undefined;
+    dispatch(
+      fetchDatasetsGraphQL({
+        search: mergedSearch,
+        theme: filters.theme || undefined,
+        format: filters.format || undefined,
+        first: 120,
+        orderBy: '-metadata_modified',
+      })
+    );
+  }, [dispatch, filters.search, filters.theme, filters.format, filters.catalogue, filters.producer]);
 
   // Charger les datasets une seule fois au montage
   useEffect(() => {

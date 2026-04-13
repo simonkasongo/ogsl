@@ -56,7 +56,7 @@ npm install
 # sans oublier toutes les dépendances dans Dépendances.txt
 ```
 
-2) variables d’environnement Vite :
+2) variables d’environnement Vite (copier `frontend/.env.example` vers `frontend/.env`) :
 - `VITE_REST_BASE_URL` (défaut: `http://localhost:8000/api/`)
 - `VITE_GRAPHQL_URL` (défaut: `http://localhost:8000/graphql/`)
 
@@ -89,6 +89,10 @@ npm run dev
 **En production (déployé sur Vercel) :**
 - **Application**: `https://ogsl.vercel.app/`
 
+Sur le tableau Vercel du projet, configure les variables de build (Settings → Environment Variables) :
+`VITE_REST_BASE_URL` = `https://ogsl-k0us.onrender.com/api/` et
+`VITE_GRAPHQL_URL` = `https://ogsl-k0us.onrender.com/graphql/` pour que le front parle au backend Render après chaque déploiement.
+
 ### Déploiement backend sur Render (Travail Pratique 1)
 
 Sur Render, **le dossier `backend/`** est déployé comme un **Web Service**.
@@ -97,12 +101,12 @@ Sur Render, **le dossier `backend/`** est déployé comme un **Web Service**.
 - **Build Command**: `pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput`
 - **Start Command**: `gunicorn ogsl.wsgi:application`
 
-Variables d’environnement Render :
-- **`DJANGO_SECRET_KEY`**: ab32a606b65b5820cecec9e3ece25010
-- **`DJANGO_DEBUG`**: `false`
-- **`DJANGO_ALLOWED_HOSTS`**: ogsl-k0us.onrender.com
-- **`CORS_ALLOWED_ORIGINS`**: `https://ogsl.vercel.app`
-- **`CSRF_TRUSTED_ORIGINS`**: `https://ogsl.vercel.app`
-- **`DATABASE_URL`**: postgresql://ogsl_db_eje7_user:dbrhHGIJ5NO02VvLr9CWQndvRaWZ0DRT@dpg-d533i8khg0os738ipjtg-a/ogsl_db_eje7
+Variables d’environnement Render (à définir dans le dashboard Render, **ne pas committer les secrets**) :
+- **`DJANGO_SECRET_KEY`** : chaîne aléatoire longue
+- **`DJANGO_DEBUG`** : `false`
+- **`DJANGO_ALLOWED_HOSTS`** : ton domaine Render (ex. `ogsl-xxxx.onrender.com`)
+- **`CORS_ALLOWED_ORIGINS`** : `https://ogsl.vercel.app`
+- **`CSRF_TRUSTED_ORIGINS`** : `https://ogsl.vercel.app`
+- **`DATABASE_URL`** : URL interne PostgreSQL fournie par Render
 
 

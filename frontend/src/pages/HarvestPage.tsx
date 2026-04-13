@@ -121,7 +121,6 @@ export const HarvestPage: React.FC = () => {
             <Card className="border-primary border-2 bg-primary/5">
               <CardContent className="pt-6">
                 <div className="flex items-start space-x-3">
-                  <span className="text-3xl">🇨🇦</span>
                   <div className="flex-1">
                     <h3 className="font-semibold text-sm mb-1">OpenGouv Canada</h3>
                     <p className="text-xs text-muted-foreground">

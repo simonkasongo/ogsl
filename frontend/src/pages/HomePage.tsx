@@ -210,6 +210,16 @@ export const HomePage: React.FC = () => {
     return buckets;
   }, [scopedDatasets]);
 
+  const recentFive = useMemo(() => {
+    return [...datasets]
+      .sort((a, b) => {
+        const da = new Date(a.metadata_modified || a.metadata_created || 0).getTime();
+        const db = new Date(b.metadata_modified || b.metadata_created || 0).getTime();
+        return db - da;
+      })
+      .slice(0, 5);
+  }, [datasets]);
+
   const newByMonth = useMemo(() => {
     const monthCount: Record<string, number> = {};
     for (const ds of scopedDatasets) {
@@ -234,14 +244,14 @@ export const HomePage: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Card className="max-w-2xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-4xl mb-4">Bienvenue sur OGSL Data Portal</CardTitle>
+            <CardTitle className="text-3xl mb-4">OGSL — données du fleuve</CardTitle>
             <CardDescription className="text-lg">
-              Plateforme de gestion et visualisation des données ouvertes du gouvernement
+              Catalogue moissonné (OpenGouv / CKAN) pour le suivi écologique du Saint-Laurent
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-center text-muted-foreground">
-              Connectez-vous pour accéder aux datasets, visualiser des statistiques et exporter des rapports.
+              Connecte-toi pour voir les jeux, les stats et lancer un moissonnage.
             </p>
             <div className="flex justify-center gap-4">
               <Link to="/login">
@@ -269,9 +279,9 @@ export const HomePage: React.FC = () => {
     <div className="space-y-8">
       {/* En-tête */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Bonjour {user?.first_name || user?.username} ! 👋</h1>
+        <h1 className="text-3xl font-bold mb-4">Salut {user?.first_name || user?.username}</h1>
         <p className="text-lg text-muted-foreground">
-          Bienvenue sur OGSL Data Portal, consultez toutes les données écologiques du majestueux fleuve Saint‑Laurent
+          Tableau lié aux jeux moissonnés (thème fleuve / eau quand c’est détectable dans les métadonnées).
         </p>
       </div>
 
@@ -279,7 +289,7 @@ export const HomePage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Datasets</CardTitle>
+            <CardTitle className="text-sm font-medium">Jeux (total catalogue)</CardTitle>
             <Database className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -581,15 +591,13 @@ export const HomePage: React.FC = () => {
       {/* Datasets récents */}
       <Card>
         <CardHeader>
-          <CardTitle>Datasets Récents</CardTitle>
-          <CardDescription>
-            Les 5 derniers datasets modifiés
-          </CardDescription>
+          <CardTitle>Derniers jeux (aperçu)</CardTitle>
+          <CardDescription>Tri rapide par date de mise à jour</CardDescription>
         </CardHeader>
         <CardContent>
           {datasets.length > 0 ? (
             <div className="space-y-4">
-              {datasets.slice(0, 5).map((dataset) => (
+              {recentFive.map((dataset) => (
                 <Link 
                   key={dataset.id} 
                   to={`/datasets/${dataset.id}`}

@@ -13,6 +13,8 @@ Desktop.ini
 # --- Secrets / env files ---
 *.env
 .env.*
+!.env.example
+!frontend/.env.example
 backend/db.env
 
 # --- Python / Django ---

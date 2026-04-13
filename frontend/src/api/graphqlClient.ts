@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { deepSnakify } from '@/utils/normalizeApi';
 
 const graphqlClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:8000/graphql/',
@@ -7,17 +8,46 @@ const graphqlClient: AxiosInstance = axios.create({
   },
 });
 
-export const executeGraphQLQuery = async <T = any>(
+graphqlClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem('token');
+    if (token && config.headers) {
+      config.headers.Authorization = `Token ${token}`;
+    }
+    return config;
+  },
+  (err) => Promise.reject(err)
+);
+
+graphqlClient.interceptors.response.use(
+  (r) => r,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const executeGraphQLQuery = async <T = unknown>(
   query: string,
-  variables?: Record<string, any>
+  variables?: Record<string, unknown>
 ): Promise<T> => {
-  const response = await graphqlClient.post('', { query, variables });
+  const response = await graphqlClient.post<{ data?: unknown; errors?: { message: string }[] }>(
+    '',
+    { query, variables }
+  );
 
   if (response.data?.errors?.length) {
     throw new Error(response.data.errors[0].message);
   }
 
-  return response.data.data as T;
+  const raw = response.data?.data;
+  return deepSnakify<T>(raw);
 };
 
 export const graphqlQueries = {
@@ -34,8 +64,14 @@ export const graphqlQueries = {
         metadataModified
         organization {
           id
-          title
+          ckanId
           name
+          title
+          source {
+            id
+            slug
+            title
+          }
         }
         source {
           id
@@ -66,8 +102,14 @@ export const graphqlQueries = {
         metadataModified
         organization {
           id
-          title
+          ckanId
           name
+          title
+          source {
+            id
+            slug
+            title
+          }
         }
         source {
           id
@@ -113,6 +155,3 @@ export const graphqlQueries = {
 };
 
 export default graphqlClient;
-
-
-

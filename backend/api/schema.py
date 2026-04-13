@@ -68,7 +68,7 @@ class Query(graphene.ObjectType):
         if theme:
             qs = qs.filter(theme__icontains=theme)
         if fmt:
-            qs = qs.filter(resources__format__iexact=fmt)
+            qs = qs.filter(resources__format__iexact=fmt).distinct()
 
         qs = qs.order_by(order_by or "-metadata_modified", "title")
 
