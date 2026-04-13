@@ -39,4 +39,4 @@ class Resource(TimeStampedModel):
     name = models.CharField(max_length=255, blank=True)
     format = models.CharField(max_length=40, db_index=True)
     url = models.URLField(max_length=1000)
-    def __str__(self): return f"{self.format} — {self.name or self.ckan_id}"
+    def __str__(self): return f"{self.format} - {self.name or self.ckan_id}"

@@ -17,7 +17,7 @@ export const AppLayout: React.FC = () => {
       
       <footer className="bg-muted py-6 mt-auto">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© {year} Projet INF37407 — données ouvertes (OpenGouv) liées au suivi du fleuve</p>
+          <p>© {year} Projet INF37407 - données ouvertes (OpenGouv) liées au suivi du fleuve</p>
           <p className="mt-1">React / Redux, API Django du TP1</p>
         </div>
       </footer>

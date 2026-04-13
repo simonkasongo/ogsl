@@ -33,7 +33,7 @@ export const Navbar: React.FC = () => {
           {/* Logo et titre */}
           <Link to="/" className="flex items-center space-x-2 text-xl font-bold hover:opacity-80 transition">
             <Database className="h-6 w-6" />
-            <span>OGSL — fleuve St-Laurent</span>
+            <span>OGSL - fleuve St-Laurent</span>
           </Link>
 
           {/* Navigation principale */}

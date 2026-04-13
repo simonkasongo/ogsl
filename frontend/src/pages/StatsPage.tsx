@@ -288,7 +288,7 @@ export const StatsPage: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Waves className="mr-2 h-5 w-5" />
-              Tableau de bord — Écologie du Saint‑Laurent
+              Tableau de bord - Écologie du Saint‑Laurent
             </CardTitle>
             <CardDescription>Les mêmes indicateurs que sur la page d’accueil.</CardDescription>
           </CardHeader>
@@ -334,7 +334,7 @@ export const StatsPage: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {freshness.avgDays === null ? '—' : `${freshness.avgDays}j`}
+                    {freshness.avgDays === null ? '-' : `${freshness.avgDays}j`}
                   </div>
                   <p className="text-xs text-muted-foreground">Depuis la dernière mise à jour</p>
                 </CardContent>

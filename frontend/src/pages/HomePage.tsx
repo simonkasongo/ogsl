@@ -159,7 +159,7 @@ export const HomePage: React.FC = () => {
       map[name] = (map[name] || 0) + 1;
     }
     const entries = Object.entries(map).sort((a, b) => b[1] - a[1]);
-    if (entries.length === 0) return { name: '—', count: 0 };
+    if (entries.length === 0) return { name: '-', count: 0 };
     return { name: entries[0][0], count: entries[0][1] };
   }, [scopedDatasets]);
 
@@ -244,7 +244,7 @@ export const HomePage: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Card className="max-w-2xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl mb-4">OGSL — données du fleuve</CardTitle>
+            <CardTitle className="text-3xl mb-4">OGSL - données du fleuve</CardTitle>
             <CardDescription className="text-lg">
               Catalogue moissonné (OpenGouv / CKAN) pour le suivi écologique du Saint-Laurent
             </CardDescription>
@@ -334,7 +334,7 @@ export const HomePage: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Waves className="mr-2 h-5 w-5" />
-            Tableau de bord — Écologie du Saint‑Laurent
+            Tableau de bord - Écologie du Saint‑Laurent
           </CardTitle>
           <CardDescription>
             Indicateurs de suivi (basés sur les données moissonnées)
@@ -390,7 +390,7 @@ export const HomePage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {freshness.avgDays === null ? '—' : `${freshness.avgDays}j`}
+                  {freshness.avgDays === null ? '-' : `${freshness.avgDays}j`}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Depuis la dernière mise à jour

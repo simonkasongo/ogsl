@@ -16,7 +16,7 @@
     <div class="col-lg-2">
       <div class="dropdown w-100">
         <select class="form-select" name="format">
-          <option value="">— Tous formats —</option>
+          <option value="">- Tous formats -</option>
           {% for f in formats %}
             <option value="{{ f }}" {% if format == f %}selected{% endif %}>{{ f }}</option>
           {% endfor %}
@@ -51,15 +51,15 @@
             {% if ds.organization %}
               {{ ds.organization.title|default:ds.organization.name }}
             {% else %}
-              <span class="text-muted">—</span>
+              <span class="text-muted">-</span>
             {% endif %}
           </td>
           <td>{{ ds.source.title }}</td>
-          <td>{{ ds.theme|default:"—" }}</td>
+          <td>{{ ds.theme|default:"-" }}</td>
           <td>
             {% if ds.metadata_modified %}{{ ds.metadata_modified|date:"Y-m-d H:i" }}
             {% elif ds.metadata_created %}{{ ds.metadata_created|date:"Y-m-d H:i" }}
-            {% else %}<span class="text-muted">—</span>{% endif %}
+            {% else %}<span class="text-muted">-</span>{% endif %}
           </td>
           <td class="text-end">
             <form method="post" action="{% url 'dataset_delete' ds.pk %}" onsubmit="return confirm('Supprimer ce jeu et ses ressources ?');" class="d-inline">
@@ -104,7 +104,7 @@
   {% endif %}
 
   <div class="small text-muted d-flex align-items-center gap-2 mt-4">
-    <span class="opacity-75">© OGSL — Tableau de bord pédagogique</span>
+    <span class="opacity-75">© OGSL - Tableau de bord pédagogique</span>
     <span class="ms-auto"><span class="me-1">☁️</span> Source: OpenGouv (CKAN)</span>
   </div>
 </div>

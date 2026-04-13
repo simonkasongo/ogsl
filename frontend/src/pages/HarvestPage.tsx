@@ -67,7 +67,7 @@ export const HarvestPage: React.FC = () => {
         success: true,
         message:
           (response.data?.message || 'Moissonnage terminé avec succès') +
-          (typeof response.data?.created === 'number' ? ` — ${response.data.created} dataset(s) ajouté(s)` : '')
+          (typeof response.data?.created === 'number' ? ` - ${response.data.created} dataset(s) ajouté(s)` : '')
       });
     } catch (error: any) {
       setResult({

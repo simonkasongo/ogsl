@@ -125,7 +125,7 @@ def harvest_view(request):
         
         message = "Moissonnage terminé pour OpenGouv Canada"
         if created == 0:
-            message += " — Aucun nouveau dataset ajouté"
+            message += " - Aucun nouveau dataset ajouté"
             message += " (les datasets trouvés étaient peut-être déjà présents ou aucune correspondance pour cette requête)"
         
         return Response({
