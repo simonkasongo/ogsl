@@ -98,8 +98,8 @@ Sur le tableau Vercel du projet, configure les variables de build (Settings → 
 Sur Render, **le dossier `backend/`** est déployé comme un **Web Service**.
 
 - **Root Directory**: `backend`
-- **Build Command**: `pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput`
-- **Start Command**: `gunicorn ogsl.wsgi:application`
+- **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput` (sans `migrate` : la base n’est pas toujours nécessaire au build, et les migrations s’exécutent au démarrage)
+- **Start Command**: `python manage.py migrate && gunicorn ogsl.wsgi:application`
 
 Variables d’environnement Render (à définir dans le dashboard Render, **ne pas committer les secrets**) :
 - **`DJANGO_SECRET_KEY`** : chaîne aléatoire longue
@@ -107,6 +107,6 @@ Variables d’environnement Render (à définir dans le dashboard Render, **ne p
 - **`DJANGO_ALLOWED_HOSTS`** : ton domaine Render (ex. `ogsl-xxxx.onrender.com`)
 - **`CORS_ALLOWED_ORIGINS`** : `https://ogsl.vercel.app`
 - **`CSRF_TRUSTED_ORIGINS`** : `https://ogsl.vercel.app`
-- **`DATABASE_URL`** : URL interne PostgreSQL fournie par Render
+- **`DATABASE_URL`** : copier **toute** l’URL depuis ton instance **PostgreSQL** Render (menu **Connections** → **Internal Database URL** si le Web Service et la base sont sur le même compte / même région). L’hôte doit ressembler à `dpg-xxxxx-a.<region>-postgres.render.com` (nom complet). Une URL tronquée ou mal collée provoque `psycopg.OperationalError: [Errno -2] Name or service not known`.
 
 

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 from dotenv import load_dotenv
 import dj_database_url
 
@@ -57,23 +58,57 @@ ROOT_URLCONF = 'ogsl.urls'
 
 WSGI_APPLICATION = 'ogsl.wsgi.application'
 
-_database_url = (os.getenv("DATABASE_URL") or "").strip()
-if _database_url:
-    DATABASES = {
-        "default": dj_database_url.parse(_database_url, conn_max_age=600, ssl_require=True)
+def _first_non_empty_env(*keys: str) -> str:
+    for key in keys:
+        value = (os.getenv(key) or "").strip()
+        if value:
+            return value
+    return ""
+
+def _looks_like_valid_db_url(url_value: str) -> bool:
+    parsed = urlparse(url_value)
+    return bool(parsed.scheme and parsed.hostname)
+
+def _postgres_from_env() -> dict:
+    host = _first_non_empty_env("PGHOST", "POSTGRES_HOST")
+    name = _first_non_empty_env("PGDATABASE", "POSTGRES_DB")
+    user = _first_non_empty_env("PGUSER", "POSTGRES_USER")
+    password = _first_non_empty_env("PGPASSWORD", "POSTGRES_PASSWORD")
+    port = _first_non_empty_env("PGPORT", "POSTGRES_PORT") or "5432"
+
+    if not (host and name and user and password):
+        return {}
+
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": name,
+        "USER": user,
+        "PASSWORD": password,
+        "HOST": host,
+        "PORT": port,
+        "CONN_MAX_AGE": 600,
+        "OPTIONS": {"sslmode": "require"},
     }
+
+_database_url = _first_non_empty_env("DATABASE_URL", "RENDER_DATABASE_URL", "INTERNAL_DATABASE_URL")
+if _database_url and _looks_like_valid_db_url(_database_url):
+    DATABASES = {"default": dj_database_url.parse(_database_url, conn_max_age=600, ssl_require=True)}
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("MYSQL_DB"),
-            "USER": os.getenv("MYSQL_USER"),
-            "PASSWORD": os.getenv("MYSQL_PASSWORD"),
-            "HOST": os.getenv("MYSQL_HOST", "127.0.0.1"),
-            "PORT": os.getenv("MYSQL_PORT", "3306"),
-            "OPTIONS": {"charset": "utf8mb4"},
+    _postgres_database = _postgres_from_env()
+    if _postgres_database:
+        DATABASES = {"default": _postgres_database}
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.mysql",
+                "NAME": os.getenv("MYSQL_DB"),
+                "USER": os.getenv("MYSQL_USER"),
+                "PASSWORD": os.getenv("MYSQL_PASSWORD"),
+                "HOST": os.getenv("MYSQL_HOST", "127.0.0.1"),
+                "PORT": os.getenv("MYSQL_PORT", "3306"),
+                "OPTIONS": {"charset": "utf8mb4"},
+            }
         }
-    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
