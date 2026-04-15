@@ -1,4 +1,3 @@
-@@ -0,0 +1,25 @@
 services:
   - type: web
     name: ogsl-backend
